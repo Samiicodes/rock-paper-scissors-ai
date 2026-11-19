@@ -1,0 +1,108 @@
+[project]
+name = 'rpsai'
+version = '0.1.0'
+description = 'Rock, paper, scissors against an AI that reads your hand through the webcam and learns your habits as you play.'
+readme = 'README.md'
+requires-python = '>=3.12'
+license = 'MIT'
+license-files = ['LICENSE']
+authors = [{ name = 'Sami Asghar' }]
+dependencies = [
+    'matplotlib',
+    'numpy',
+    'pydantic',
+    'pyyaml',
+    'scikit-learn',
+]
+
+[dependency-groups]
+dev = [
+    'mypy',
+    'pre-commit',
+    'pre-commit-hooks',
+    'pytest',
+    'pytest-cov',
+    'ruff',
+    'types-pyyaml',
+]
+
+[build-system]
+requires = ['hatchling']
+build-backend = 'hatchling.build'
+
+[tool.hatch.build.targets.wheel]
+packages = ['src/rpsai']
+
+[tool.uv]
+required-version = '>=0.13'
+# Resolve against a fixed date so that relocking gives the same versions
+exclude-newer = '2026-11-01T00:00:00Z'
+
+[tool.ruff]
+line-length = 100
+target-version = 'py312'
+extend-exclude = ['web']
+
+[tool.ruff.format]
+# Keep single-quoted docstrings; the formatter would otherwise switch them to double quotes
+quote-style = 'preserve'
+
+[tool.ruff.lint]
+select = [
+    'B',    # bugbear
+    'C4',   # comprehensions
+    'D',    # docstrings
+    'E',    # pycodestyle errors
+    'F',    # pyflakes
+    'I',    # import order
+    'N',    # naming
+    'PTH',  # pathlib
+    'Q',    # quotes
+    'RUF',  # ruff-specific
+    'SIM',  # simplify
+    'UP',   # pyupgrade
+    'W',    # pycodestyle warnings
+]
+ignore = [
+    'D105',  # magic methods are self-explanatory
+    'D107',  # classes document their constructor arguments
+    'D300',  # docstrings use single quotes like the rest of the code
+]
+
+[tool.ruff.lint.per-file-ignores]
+'tests/*' = ['D']
+# matplotlib.use must run before pyplot is imported
+'src/rpsai/plotting.py' = ['E402']
+
+[tool.ruff.lint.flake8-quotes]
+inline-quotes = 'single'
+multiline-quotes = 'single'
+docstring-quotes = 'single'
+
+[tool.ruff.lint.pydocstyle]
+convention = 'google'
+
+[tool.mypy]
+python_version = '3.12'
+strict = true
+plugins = ['pydantic.mypy']
+files = ['src', 'scripts', 'tests']
+mypy_path = 'src'
+
+[[tool.mypy.overrides]]
+# scikit-learn ships without type information
+module = ['sklearn.*']
+ignore_missing_imports = true
+
+[tool.pytest.ini_options]
+testpaths = ['tests']
+addopts = ['--strict-markers', '--strict-config']
+
+[tool.coverage.run]
+source = ['rpsai']
+branch = true
+
+[tool.coverage.report]
+show_missing = true
+skip_covered = true
+fail_under = 90

@@ -1,0 +1,75 @@
+# Installed by make install. Run every hook by hand with: uv run python -m pre_commit run --all-files
+#
+# Every hook runs from the project environments, so versions come from uv.lock and
+# package-lock.json and nothing is downloaded separately. Python tools are started with
+# python -m rather than their own .exe launchers, which Windows application control policies
+# can block.
+repos:
+  - repo: local
+    hooks:
+      - id: check-added-large-files
+        name: check for added large files
+        entry: uv run python -m pre_commit_hooks.check_added_large_files --maxkb=1000
+        language: system
+      - id: check-merge-conflict
+        name: check for merge conflicts
+        entry: uv run python -m pre_commit_hooks.check_merge_conflict
+        language: system
+        types: [text]
+      - id: check-toml
+        name: check toml
+        entry: uv run python -m pre_commit_hooks.check_toml
+        language: system
+        types: [toml]
+      - id: check-yaml
+        name: check yaml
+        entry: uv run python -m pre_commit_hooks.check_yaml
+        language: system
+        types: [yaml]
+      - id: check-json
+        name: check json
+        entry: uv run python -m pre_commit_hooks.check_json
+        language: system
+        types: [json]
+      - id: detect-private-key
+        name: detect private key
+        entry: uv run python -m pre_commit_hooks.detect_private_key
+        language: system
+        types: [text]
+      - id: end-of-file-fixer
+        name: fix end of files
+        entry: uv run python -m pre_commit_hooks.end_of_file_fixer
+        language: system
+        types: [text]
+      - id: trailing-whitespace
+        name: trim trailing whitespace
+        entry: uv run python -m pre_commit_hooks.trailing_whitespace_fixer
+        language: system
+        types: [text]
+      - id: ruff-check
+        name: ruff check
+        entry: uv run ruff check --fix
+        language: system
+        types_or: [python, pyi, jupyter]
+      - id: ruff-format
+        name: ruff format
+        entry: uv run ruff format
+        language: system
+        types_or: [python, pyi, jupyter]
+      - id: mypy
+        name: mypy
+        entry: uv run python -m mypy
+        language: system
+        types: [python]
+        pass_filenames: false
+      - id: biome
+        name: biome
+        entry: npx biome check --write --no-errors-on-unmatched --files-ignore-unknown=true
+        language: system
+        types_or: [javascript, css, json]
+      - id: tsc
+        name: type check javascript
+        entry: npx tsc --noEmit
+        language: system
+        types: [javascript]
+        pass_filenames: false

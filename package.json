@@ -1,0 +1,24 @@
+{
+  "name": "rock-paper-scissors-ai",
+  "version": "0.1.0",
+  "private": true,
+  "description": "The web game: webcam hand reading and the move predictor, run in the browser.",
+  "license": "MIT",
+  "type": "module",
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "check": "biome check && tsc --noEmit",
+    "format": "biome check --write",
+    "test": "node --test",
+    "e2e": "node --test web/e2e/match.e2e.js"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "2.6.4",
+    "@mediapipe/tasks-vision": "1.2.0",
+    "@types/node": "26.6.6",
+    "playwright-core": "1.64.1",
+    "typescript": "7.0.2"
+  }
+}
