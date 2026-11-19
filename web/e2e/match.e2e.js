@@ -64,6 +64,18 @@ describe('the game in a browser', () => {
     await page.close();
   });
 
+  it('starts a match clicked before the predictor settings have downloaded', async () => {
+    const page = await browser.newPage();
+    await page.route('**/models/predictor.json', async (route) => {
+      await new Promise((done) => setTimeout(done, 1500));
+      await route.continue();
+    });
+    await page.goto(site.url, { waitUntil: 'domcontentloaded' });
+    await page.getByRole('button', { name: 'Play with buttons' }).click();
+    await page.locator('#ai-card .fingerprint').waitFor({ timeout: 10_000 });
+    await page.close();
+  });
+
   it('starts the camera and runs the hand tracker', async () => {
     const page = await browser.newPage();
     /** @type {string[]} */

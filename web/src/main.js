@@ -395,11 +395,16 @@ function setMode(mode) {
 
 /** @param {'buttons' | 'camera'} mode */
 async function startGame(mode) {
-  if (state.settings === null || state.busy) {
+  if (state.busy) {
     return;
   }
   state.busy = true;
   try {
+    // A click can arrive before the settings have downloaded
+    await settingsLoaded;
+    if (state.settings === null) {
+      return;
+    }
     if (mode === 'camera' && !(await startCamera())) {
       return;
     }
@@ -444,15 +449,17 @@ async function playAgain() {
   await beginRound();
 }
 
-async function init() {
-  try {
-    const predictor = await loadJson('models/predictor.json');
+const settingsLoaded = loadJson('models/predictor.json').then(
+  (predictor) => {
     state.settings = predictor.settings;
-  } catch {
+  },
+  () => {
     ui.introNote.textContent = 'The game could not load. Please reload the page.';
     ui.introNote.classList.add('error');
-    return;
-  }
+  },
+);
+
+function init() {
   ui.playCamera.addEventListener('click', () => startGame('camera'));
   ui.playButtons.addEventListener('click', () => startGame('buttons'));
   ui.action.addEventListener('click', () => playWithCamera());
