@@ -1,0 +1,62 @@
+# Settings for downloading data, training, evaluation, and the web export.
+# Paths are relative to the repository root.
+
+data:
+  raw_dir: data/raw
+  processed_dir: data/processed
+
+downloads:
+  # HaGRID v2 annotations with MediaPipe hand landmarks, without the images
+  hagrid:
+    url: https://rndml-team-cv.obs.ru-moscow-1.hc.sbercloud.ru/datasets/hagrid_v2/annotations_with_landmarks/annotations.zip
+    file: hagrid_annotations.zip
+    sha256: ca27a177cc9f061e92d59f6a7d9b1b10fe2ee8289ab5f2068cde6ab197d2a286
+  # Komai et al. (2022), pinned to a commit. Used for evaluation only, see the README.
+  human_games:
+    url: https://codeload.github.com/kuro-lab/RPSdata/zip/a4da976b1430782c213ea4ce70a01a0b3022aa69
+    file: rpsdata.zip
+    sha256: 8740c43a461e3797b78ee21c46cc7a286d8476b37b3a29d5b4aae7a95ed1679c
+
+gestures:
+  seed: 0
+  # HaGRID labels that make up each class. Gestures between moves, such as three fingers or a
+  # loose grip, are left out of training and only used to show how the reader handles them.
+  classes:
+    rock: [fist]
+    paper: [palm, stop, stop_inverted, four]
+    scissors: [peace, peace_inverted, two_up, two_up_inverted]
+    other: [call, dislike, like, little_finger, middle_finger, mute, no_gesture, ok, one, point, rock, three_gun, thumb_index]
+  # Hands drawn per class and split, spread evenly over the class's labels
+  hands_per_class:
+    train: 20000
+    val: 3000
+    test: 5000
+  # The annotations do not record each image's aspect ratio, so every training hand is
+  # stretched vertically by a random factor from this range
+  stretch_range: [0.5, 2.0]
+  stretched_copies: 2
+  hidden_layers: [64, 64]
+  l2_penalty: 0.0001
+  max_epochs: 200
+  # The game accepts a reading only when the top class is at least this likely. The threshold is
+  # the lowest one that keeps wrong moves at or below this share of validation hands.
+  max_wrong_move_rate: 0.0025
+
+predictor:
+  seed: 0
+  # Share of players used for tuning. The rest are only used for the reported results.
+  tuning_fraction: 0.5
+  pattern_length: 6
+  grid:
+    decay: [0.7, 0.8, 0.9, 1.0]
+    prior: [0.5, 1.0]
+    learning_rate: [0.5, 1.0, 2.0]
+    score_decay: [0.8, 0.9, 0.95, 1.0]
+  margins: [0.0, 0.02, 0.05, 0.1]
+  bootstrap_samples: 2000
+
+outputs:
+  report_dir: reports
+  # The trained gesture reader and the tuned predictor settings are written here for the game
+  web_model_dir: web/models
+  fixture_dir: web/test/fixtures
